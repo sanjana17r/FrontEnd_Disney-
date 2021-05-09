@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { findRenderedComponentWithType } from 'react-dom/test-utils'
 import {auth, provider} from '../firebase';
 import styled from 'styled-components'
@@ -18,6 +18,19 @@ function Header() {
     const userName = useSelector(selectUserName);
     const history = useHistory();
     const userPhoto = useSelector(selectUserPhoto);
+
+    useEffect(() => {
+        auth.onAuthStateChanged(async(user)=> {
+            if(user){
+                dispatch(setUserLogin({
+                    name: user.displayName,
+                    email: user.email,
+                    photo: user.photoURL
+                }));
+                history.push("/")
+            }
+        })
+    }, [])
     
     const signIn = () => {
         auth.signInWithPopup(provider)
@@ -29,6 +42,7 @@ function Header() {
                 email: user.email,
                 photo: user.photoURL
             }));
+            history.push('/')
         })
     }
     const signOut = () => {
